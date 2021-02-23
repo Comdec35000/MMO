@@ -1,0 +1,147 @@
+
+<link rel="shortcut icon" href="./img/icon.ico">
+<div>
+  <canvas id="main" width="600" height="400"></canvas>
+</div>
+
+
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+  const socket = io();
+
+  const ctx = document.getElementById('main').getContext('2d');
+
+  var debugMode = false;
+
+  function debugModeState(state) {
+    if(!typeof state == 'string') return;
+    debugMode = state;
+  }
+
+  socket.on('serverUP', id => {
+    this.id = id;
+    console.log(`Current id : ${this.id}`);
+  })
+
+  socket.on('connectionError', () => {
+    document.location.reload();
+  })
+
+  socket.on('renderData', (data) => {
+    //GAME RENDER
+    ctx.clearRect(0, 0, 600, 400);
+
+    var thisPlayer = data.find(player => player.id == this.id);
+
+    for(entity of data) {
+      if(entity.id == this.id) {
+        ctx.fillStyle = '#FFC300';
+      } else if (entity.hp){
+        ctx.fillStyle = '#FFF';
+      } else {
+        ctx.fillStyle = '#FF0000';
+      }
+      ctx.fillRect((entity.x - thisPlayer.x) + 300, (entity.y - thisPlayer.y)+200, entity.boundX, entity.boundY);
+      ctx.fillStyle = '#FFF';
+    }
+
+    //HUD
+    if(debugMode) {
+      ctx.fillText(`Coordinates x:${thisPlayer.x}   y:${thisPlayer.y}`, 20, 30)
+      ctx.fillRect(0, 0, 10, 10);
+    }
+    ctx.fillText(thisPlayer.hp, 20, 20);
+  });
+
+  document.onkeydown = event => {
+    switch (event.keyCode) {
+      case 83:
+        socket.emit('keyPress', {
+          inputID : "down",
+          state : true
+        });
+        break;
+      case 90:
+        socket.emit('keyPress', {
+          inputID : "up",
+          state : true
+        });
+        break;
+        case 81:
+          socket.emit('keyPress', {
+            inputID : "left",
+            state : true
+          });
+          break;
+        case 68:
+          socket.emit('keyPress', {
+            inputID : "right",
+            state : true
+          });
+          break;
+      default:
+        break;
+    }
+  }
+
+  document.onkeyup = event => {
+    switch (event.keyCode) {
+      case 83:
+        socket.emit('keyPress', {
+          inputID : "down",
+          state : false
+        });
+        break;
+      case 90:
+        socket.emit('keyPress', {
+          inputID : "up",
+          state : false
+        });
+        break;
+      case 81:
+        socket.emit('keyPress', {
+          inputID : "left",
+          state : false
+        });
+        break;
+      case 68:
+        socket.emit('keyPress', {
+          inputID : "right",
+          state : false
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  document.onmousedown = event => {
+    socket.emit('keyPress', {
+      inputID : 'useMainItem',
+      state : true
+    })
+  }
+
+  document.onmouseup = event => {
+    socket.emit('keyPress', {
+      inputID : 'useMainItem',
+      state : false
+    })
+  }
+
+  document.onmousemove = event => {
+    let x = -250 + event.clientX - 8;
+    let y = -250 + event.clientY - 8;
+    let angle = Math.atan2(y, x) / Math.PI * 180;
+    socket.emit('keyPress', {
+      inputID : 'mouseAngle',
+      state : angle
+    })
+  }
+
+</script>
+<style media="screen" type="text/css">
+  canvas {
+    background-color: #222;
+  }
+</style>

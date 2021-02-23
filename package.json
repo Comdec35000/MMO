@@ -1,0 +1,18 @@
+{
+  "name": "MMO",
+  "version": "0.0.0",
+  "description": "Juste un test pour apprendre le back",
+  "main": "main.js",
+  "scripts": {
+    "prod": "node main.js",
+    "dev": "nodemon main.js"
+  },
+  "keywords": [],
+  "author": "Com",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "socket.io": "^3.1.1"
+  }
+}

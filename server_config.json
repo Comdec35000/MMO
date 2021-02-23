@@ -1,0 +1,6 @@
+{
+  "port" : 2000,
+  "targetedFPSRate" : 40,
+  "screenWidth" : 600,
+  "screenHeight" : 400
+}
